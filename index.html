@@ -3,478 +3,617 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Radiografía Interactiva · Conectividad Rural en Chile</title>
+    <title>Radiografía Conectividad Rural · Chile</title>
 
-    <!-- Chart.js para gráficos -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
     </script>
-    <!-- Font Awesome para iconos -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
     <style>
+        /* ===== PALETA DE COLORES ===== */
+        :root {
+            --yellow: #eab308;
+            --yellow-light: #fef9c3;
+            --yellow-dark: #a16207;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --black: #000000;
+            --white: #ffffff;
+        }
+
         /* ===== RESET Y BASE ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
-            background: #f4f7fc;
-            color: #1e2a3a;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-900);
             padding: 2rem 1rem;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 1300px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 32px;
-            box-shadow: 0 20px 60px rgba(0, 20, 40, 0.08);
-            padding: 2rem 2.5rem;
+            line-height: 1.5;
         }
 
-        /* ===== ENCABEZADO ===== */
-        header {
-            text-align: center;
-            padding-bottom: 2rem;
-            border-bottom: 2px solid #e9edf2;
-            margin-bottom: 2.5rem;
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+            padding: 2rem 2.5rem;
+            border: 1px solid var(--gray-200);
         }
-        header h1 {
+
+        /* ===== HEADER (Negro + Amarillo) ===== */
+        .header-dark {
+            background: var(--gray-900);
+            margin: -2rem -2.5rem 2.5rem -2.5rem;
+            padding: 2.5rem 2.5rem 2rem 2.5rem;
+            border-radius: 24px 24px 0 0;
+            border-bottom: 6px solid var(--yellow);
+        }
+
+        .header-dark h1 {
             font-size: 2.8rem;
             font-weight: 700;
             letter-spacing: -0.02em;
-            background: linear-gradient(145deg, #0033a0, #d52b1e);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        header p {
-            font-size: 1.2rem;
-            color: #3d4a5c;
-            margin-top: 0.3rem;
-        }
-        .badge-date {
-            display: inline-block;
-            background: #eef2f7;
-            padding: 0.3rem 1.2rem;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            color: #1e2a3a;
-            margin-top: 0.5rem;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        /* ===== TARJETAS DE RESUMEN ===== */
-        .cards-summary {
+        .header-dark h1 span {
+            color: var(--yellow);
+        }
+
+        .header-dark .subhead {
+            color: var(--gray-300);
+            font-size: 1.2rem;
+            margin-top: 0.25rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .header-dark .badge-date {
+            background: var(--yellow);
+            color: var(--gray-900);
+            padding: 0.2rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* ===== KPI CARDS (Resumen) ===== */
+        .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.2rem;
+            margin-bottom: 2.5rem;
         }
-        .card-stat {
-            background: #f8faff;
-            border-radius: 20px;
-            padding: 1.5rem 1rem;
+
+        @media (max-width: 700px) {
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .container {
+                padding: 1rem;
+            }
+            .header-dark {
+                margin: -1rem -1rem 1.5rem -1rem;
+                padding: 1.5rem 1rem;
+            }
+            .header-dark h1 {
+                font-size: 1.8rem;
+                flex-wrap: wrap;
+            }
+        }
+
+        .kpi-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            padding: 1.2rem 1rem;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-            border: 1px solid #eef2f7;
-            transition: transform 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            transition: 0.2s;
+            border-bottom: 4px solid var(--yellow);
         }
-        .card-stat:hover {
-            transform: translateY(-4px);
+
+        .kpi-card .number {
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            line-height: 1.1;
         }
-        .card-stat .number {
-            font-size: 2.4rem;
-            font-weight: 700;
-            color: #0033a0;
+
+        .kpi-card .number small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--gray-500);
         }
-        .card-stat .label {
-            font-size: 0.9rem;
-            color: #4a5b6e;
+
+        .kpi-card .label {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            font-weight: 500;
             margin-top: 0.2rem;
         }
 
         /* ===== SECCIONES ===== */
         section {
-            margin-bottom: 3.5rem;
+            margin-bottom: 3rem;
         }
-        h2 {
-            font-size: 1.9rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            color: #1a2a3a;
+            gap: 0.6rem;
+            border-bottom: 3px solid var(--yellow);
+            padding-bottom: 0.4rem;
         }
-        h2 i {
-            color: #0033a0;
-            font-size: 1.7rem;
-        }
-        .subh {
-            color: #3d5a73;
+
+        .section-sub {
+            color: var(--gray-500);
             font-weight: 400;
-            font-size: 1.1rem;
-            margin-top: -0.5rem;
+            font-size: 1rem;
             margin-bottom: 1.5rem;
+            margin-top: -0.2rem;
         }
 
         /* ===== GRID DE GRÁFICOS ===== */
-        .grid-2col {
+        .chart-grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
+            margin-bottom: 1.5rem;
         }
-        .grid-3col {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-        }
-        @media (max-width: 900px) {
-            .grid-2col,
-            .grid-3col {
+
+        @media (max-width: 800px) {
+            .chart-grid-2 {
                 grid-template-columns: 1fr;
+                gap: 1.5rem;
             }
         }
 
         .chart-box {
-            background: #ffffff;
-            border-radius: 20px;
+            background: var(--gray-100);
+            border-radius: 16px;
             padding: 1.2rem 1rem 0.8rem;
-            border: 1px solid #e9edf2;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--gray-200);
         }
+
         .chart-box h3 {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 0.8rem;
-            color: #1e2a3a;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
             display: flex;
-            align-items: center;
             gap: 0.5rem;
+            align-items: center;
         }
+
         .chart-box canvas {
-            max-height: 220px;
+            max-height: 200px;
             max-width: 100%;
         }
+
         .chart-box .footnote {
-            font-size: 0.8rem;
-            color: #6b7a8d;
-            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--gray-500);
             text-align: right;
-            border-top: 1px dashed #eef2f7;
-            padding-top: 0.5rem;
+            border-top: 1px solid var(--gray-200);
+            padding-top: 0.4rem;
+            margin-top: 0.3rem;
+        }
+
+        /* ===== CALLOUT / DESTACADO ===== */
+        .callout-gap {
+            background: var(--yellow-light);
+            border-left: 6px solid var(--yellow);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin: 1.2rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .callout-gap .big {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--gray-900);
+        }
+
+        .callout-gap .desc {
+            font-weight: 500;
+            color: var(--gray-700);
         }
 
         /* ===== TABLAS ===== */
         .table-wrap {
             overflow-x: auto;
-            margin: 1.2rem 0;
+            margin: 1rem 0;
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.95rem;
-        }
-        th {
-            background: #eef3fa;
-            font-weight: 600;
-            padding: 0.7rem 0.8rem;
-            text-align: left;
-        }
-        td {
-            padding: 0.6rem 0.8rem;
-            border-bottom: 1px solid #eef2f7;
-        }
-        .highlight {
-            background: #f0f7ff;
-            font-weight: 500;
-        }
-        .tag {
-            display: inline-block;
-            background: #d52b1e;
-            color: white;
-            border-radius: 20px;
-            padding: 0.1rem 0.8rem;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
+            font-size: 0.9rem;
         }
 
-        /* ===== TARJETAS DE POLÍTICAS ===== */
+        th {
+            background: var(--gray-900);
+            color: var(--white);
+            padding: 0.7rem 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--white);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tag-yellow {
+            background: var(--yellow);
+            color: var(--gray-900);
+            font-weight: 700;
+            padding: 0.1rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .highlight-cell {
+            background: var(--yellow-light);
+            font-weight: 700;
+        }
+
+        /* ===== POLÍTICAS ===== */
         .policy-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.2rem;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
         }
+
         .policy-card {
-            background: #fafcff;
-            border-radius: 18px;
-            padding: 1.2rem 1.2rem 1.5rem;
-            border-left: 5px solid #0033a0;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 14px;
+            padding: 1rem 1.2rem;
+            border-top: 4px solid var(--yellow);
             transition: 0.15s;
         }
+
         .policy-card:hover {
-            background: #f4f9ff;
+            background: var(--gray-100);
         }
+
         .policy-card h4 {
-            font-size: 1.1rem;
-            margin-bottom: 0.2rem;
+            font-size: 1rem;
+            font-weight: 700;
         }
+
         .policy-card .focus {
-            font-size: 0.85rem;
-            color: #3d5a73;
-            font-weight: 500;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--gray-500);
+            font-weight: 600;
         }
+
         .policy-card p {
-            font-size: 0.9rem;
-            color: #3d4a5c;
+            font-size: 0.85rem;
+            color: var(--gray-700);
             margin-top: 0.3rem;
         }
 
         /* ===== PIE ===== */
         footer {
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 2px solid #e9edf2;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--gray-200);
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 1rem;
-            font-size: 0.9rem;
-            color: #4a5b6e;
-        }
-        footer a {
-            color: #0033a0;
-            text-decoration: none;
-        }
-        footer a:hover {
-            text-decoration: underline;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--gray-500);
         }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 600px) {
-            .container {
-                padding: 1rem;
-            }
-            header h1 {
-                font-size: 2rem;
-            }
-            .cards-summary {
-                grid-template-columns: 1fr 1fr;
-            }
+        footer a {
+            color: var(--gray-900);
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 2px solid var(--yellow);
+        }
+
+        footer a:hover {
+            color: var(--black);
+        }
+
+        /* ===== UTIL ===== */
+        .flex-icon {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .mt-1 {
+            margin-top: 0.8rem;
+        }
+        .text-gray {
+            color: var(--gray-500);
+        }
+        .fw-bold {
+            font-weight: 700;
         }
     </style>
 </head>
 <body>
+
     <div class="container">
 
-        <!-- ======== ENCABEZADO ======== -->
-        <header>
-            <h1>🌐 Radiografía Interactiva</h1>
-            <p>Conectividad · Digitalización · Alfabetización digital en el Chile rural</p>
-            <span class="badge-date"><i class="far fa-calendar-alt"></i> Actualizado 2024–2025</span>
-        </header>
-
-        <!-- ======== RESUMEN RÁPIDO ======== -->
-        <div class="cards-summary">
-            <div class="card-stat">
-                <div class="number">94.5%</div>
-                <div class="label">Hogares rurales con internet (propio)</div>
-            </div>
-            <div class="card-stat">
-                <div class="number">32%</div>
-                <div class="label">Hogares rurales con internet fijo</div>
-            </div>
-            <div class="card-stat">
-                <div class="number">54%</div>
-                <div class="label">Población con habilidades digitales básicas</div>
-            </div>
-            <div class="card-stat">
-                <div class="number">7.2%</div>
-                <div class="label">Con habilidades digitales avanzadas</div>
+        <!-- ======== HEADER OSCURO ======== -->
+        <div class="header-dark">
+            <h1>
+                <i class="fas fa-signal" style="color: var(--yellow);"></i>
+                Radiografía <span>Conectividad Rural</span>
+            </h1>
+            <div class="subhead">
+                <span><i class="far fa-calendar-alt"></i> Actualizado 2024 – 2025 · Fuentes: SUBTEL, BCN, INDAP</span>
+                <span class="badge-date"><i class="fas fa-map-pin"></i> Chile</span>
             </div>
         </div>
 
-        <!-- ======== SECCIÓN 1: CONECTIVIDAD ======== -->
+        <!-- ======== KPIs DE CABECERA ======== -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="number">94.5<small>%</small></div>
+                <div class="label">Hogares rurales con internet (propio)</div>
+            </div>
+            <div class="kpi-card">
+                <div class="number">32<small>%</small></div>
+                <div class="label">Hogares rurales con <strong>internet fijo</strong></div>
+            </div>
+            <div class="kpi-card">
+                <div class="number">54<small>%</small></div>
+                <div class="label">Población con habilidades <strong>básicas</strong></div>
+            </div>
+            <div class="kpi-card">
+                <div class="number">7.2<small>%</small></div>
+                <div class="label">Población con habilidades <strong>avanzadas</strong></div>
+            </div>
+        </div>
+
+        <!-- ==================================================== -->
+        <!-- ===== SECCIÓN 1: CONECTIVIDAD ===== -->
+        <!-- ==================================================== -->
         <section>
-            <h2><i class="fas fa-satellite-dish"></i> Conectividad</h2>
-            <p class="subh">Avances rápidos en cobertura móvil, pero brecha fija aún muy grande.</p>
+            <h2 class="section-title"><i class="fas fa-satellite-dish"></i> 1. Conectividad</h2>
+            <p class="section-sub">Cobertura móvil casi universal, pero el <strong>internet fijo de calidad</strong> es el gran pendiente en el mundo rural.</p>
 
-            <div class="grid-2col">
-                <!-- Gráfico: Acceso fijo urbano vs rural -->
-                <div class="chart-box">
-                    <h3><i class="fas fa-wifi"></i> Internet fijo en hogares</h3>
-                    <canvas id="chartFijo" width="300" height="200"></canvas>
-                    <div class="footnote">Brecha de 40 puntos porcentuales</div>
+            <!-- CALLOUT: LA GRAN BRECHA -->
+            <div class="callout-gap">
+                <div>
+                    <span class="big">40 puntos</span>
+                    <span class="desc">de brecha en internet fijo entre urbano y rural</span>
                 </div>
-
-                <!-- Gráfico: Evolución fijo rural 2021–2024 -->
-                <div class="chart-box">
-                    <h3><i class="fas fa-chart-line"></i> Evolución fijo rural</h3>
-                    <canvas id="chartEvolucion" width="300" height="200"></canvas>
-                    <div class="footnote">Crecimiento lento: +7 pts en 3 años</div>
+                <div>
+                    <span class="tag-yellow"><i class="fas fa-house"></i> Urbano 72%</span>
+                    <span style="margin:0 0.5rem; color:var(--gray-500);">vs</span>
+                    <span class="tag-yellow" style="background: var(--gray-900); color: white;">Rural 32%</span>
                 </div>
             </div>
 
-            <!-- Tabla de indicadores clave -->
-            <div style="margin: 1.5rem 0;">
-                <h3 style="font-size:1.2rem; margin-bottom:0.5rem;">📊 Indicadores de conectividad</h3>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr><th>Indicador</th><th>Urbano</th><th>Rural</th><th>Brecha</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>Hogares con internet propio</td><td>96.8%</td><td>94.5%</td><td>2.3 pts</td></tr>
-                            <tr><td>Acceso internet fijo (fibra/cable)</td><td>72%</td><td class="highlight">32%</td><td>40 pts</td></tr>
-                            <tr><td>Hogares que solo usan móvil</td><td>~25%</td><td>&gt;25%</td><td>dependencia móvil</td></tr>
-                            <tr><td>Conexión fija en comunas rurales (2024)</td><td>69%</td><td class="highlight">24%</td><td>45 pts</td></tr>
-                        </tbody>
-                    </table>
+            <div class="chart-grid-2">
+                <!-- Gráfico 1: Fijo Urbano vs Rural -->
+                <div class="chart-box">
+                    <h3><i class="fas fa-wifi"></i> Acceso a internet fijo</h3>
+                    <canvas id="chartFijo" width="300" height="180"></canvas>
+                    <div class="footnote">Brecha de calidad: solo 1 de cada 3 hogares rurales tiene fibra o cable.</div>
                 </div>
-                <p style="font-size:0.9rem; color:#4a5b6e;">
-                    <i class="fas fa-triangle-exclamation" style="color:#d52b1e;"></i>
-                    Más de 2.000 localidades rurales sin servicios móviles ni fijos.
-                    <br />
-                    <i class="fas fa-school"></i> Escuelas rurales: 98% tienen internet, pero solo 65% de ellas tiene <strong>alta velocidad</strong>.
-                </p>
+
+                <!-- Gráfico 2: Evolución Rural -->
+                <div class="chart-box">
+                    <h3><i class="fas fa-chart-line"></i> Evolución del fijo en zonas rurales</h3>
+                    <canvas id="chartEvolucion" width="300" height="180"></canvas>
+                    <div class="footnote">Crecimiento lento: +7 puntos en 3 años (2021→2024).</div>
+                </div>
             </div>
 
-            <!-- Proyectos destacados -->
-            <div style="background:#f0f6fe; border-radius:16px; padding:1.2rem 1.8rem; margin-top:1rem;">
-                <h4 style="display:flex; gap:0.5rem;"><i class="fas fa-hard-hat"></i> Proyectos de infraestructura</h4>
-                <ul style="list-style: none; padding-left:0; display:flex; flex-wrap:wrap; gap:1.2rem;">
-                    <li><span class="tag">WOM</span> Fibra Óptica Nacional: 161 comunas, 10 regiones, +2,5M personas</li>
-                    <li><span class="tag">Hogares Digitales</span> Fibra a todas las comunas continentales para 2026</li>
-                    <li><span class="tag">Escuelas Conectadas</span> 203 escuelas rurales con internet gratuito</li>
-                </ul>
+            <!-- TABLA RESUMEN -->
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Indicador</th><th>Urbano</th><th>Rural</th><th>Brecha</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Hogares con internet (propio)</td>
+                            <td>96.8%</td>
+                            <td>94.5%</td>
+                            <td>2.3 pts</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Internet fijo (fibra/cable)</strong></td>
+                            <td>72%</td>
+                            <td class="highlight-cell">32%</td>
+                            <td class="highlight-cell">40 pts</td>
+                        </tr>
+                        <tr>
+                            <td>Hogares que solo usan móvil</td>
+                            <td>~25%</td>
+                            <td>&gt;25%</td>
+                            <td>Dependencia móvil</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; background: var(--gray-100); padding: 1rem; border-radius: 12px; margin-top: 0.8rem;">
+                <div><span class="tag-yellow"><i class="fas fa-triangle-exclamation"></i> Alerta</span> +2.000 localidades rurales sin servicios móviles ni fijos.</div>
+                <div><span class="tag-yellow"><i class="fas fa-school"></i> Escuelas</span> 98% tienen internet, pero solo 65% cuenta con <strong>alta velocidad</strong>.</div>
+                <div><span class="tag-yellow"><i class="fas fa-tower-broadcast"></i> Proyectos</span> Fibra WOM (161 comunas) · Hogares Digitales (meta 2026).</div>
             </div>
         </section>
 
-        <!-- ======== SECCIÓN 2: DIGITALIZACIÓN ======== -->
+        <!-- ==================================================== -->
+        <!-- ===== SECCIÓN 2: DIGITALIZACIÓN ===== -->
+        <!-- ==================================================== -->
         <section>
-            <h2><i class="fas fa-laptop"></i> Digitalización</h2>
-            <p class="subh">Plataformas públicas y agrícolas en crecimiento, pero frenadas por la conectividad fija.</p>
+            <h2 class="section-title"><i class="fas fa-laptop"></i> 2. Digitalización</h2>
+            <p class="section-sub">Plataformas públicas (<strong>Clave Única</strong>, <strong>Mi INDAP</strong>) avanzan, pero el uso real choca con la falta de conectividad fija y dispositivos adecuados.</p>
 
-            <div class="grid-2col">
+            <div class="chart-grid-2">
                 <div class="chart-box">
-                    <h3><i class="fas fa-user-check"></i> Uso de SII online por nivel socioeconómico</h3>
-                    <canvas id="chartSII" width="300" height="200"></canvas>
-                    <div class="footnote">ABC1 96% vs D/E 51% – brecha de acceso digital</div>
+                    <h3><i class="fas fa-users"></i> Uso de SII online por nivel socioeconómico</h3>
+                    <canvas id="chartSII" width="300" height="180"></canvas>
+                    <div class="footnote">ABC1 96% vs D/E 51% — la brecha digital es también económica.</div>
                 </div>
                 <div class="chart-box">
-                    <h3><i class="fas fa-user-clock"></i> Uso SII online por edad</h3>
-                    <canvas id="chartEdad" width="300" height="200"></canvas>
-                    <div class="footnote">Solo 51% de mayores de 60 años lo utilizan</div>
+                    <h3><i class="fas fa-user-clock"></i> Uso de SII online por edad</h3>
+                    <canvas id="chartEdad" width="300" height="180"></canvas>
+                    <div class="footnote">Solo la mitad de los mayores de 60 años utiliza trámites digitales.</div>
                 </div>
             </div>
 
-            <div style="margin-top:1.5rem;">
-                <h4 style="display:flex; gap:0.5rem;"><i class="fas fa-tractor"></i> Plataformas para agricultores (INDAP)</h4>
-                <ul style="list-style: none; padding-left:0; display:flex; flex-wrap:wrap; gap:1.5rem;">
-                    <li><strong>Mi INDAP</strong> – Sucursal virtual para trámites y beneficios.</li>
-                    <li><strong>Mi Pago INDAP</strong> – +62 mil agricultores pagan créditos en línea, ahorrando desplazamientos de hasta 50 km.</li>
-                    <li><strong>Plataforma Apolo</strong> – Postulación a proyectos de inversión (PDI, IFP).</li>
-                </ul>
-                <p style="margin-top:0.8rem; background:#f2f6fa; padding:0.8rem 1.2rem; border-radius:12px;">
-                    <i class="fas fa-arrow-right" style="color:#0033a0;"></i>
-                    <strong>Iniciativas:</strong> Piloto FAO–Gobierno en Ñuble (150 usuarios), capacitación a 495 mujeres rurales en Valparaíso, y Chile Mayor Digital 2.0 con plazas itinerantes.
-                </p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 0.5rem;">
+                <div style="background: var(--gray-100); padding: 1rem; border-radius: 12px;">
+                    <h4 style="display: flex; gap: 0.5rem; color: var(--gray-900);"><i class="fas fa-tractor" style="color: var(--yellow-dark);"></i> Plataformas INDAP</h4>
+                    <ul style="list-style: none; padding: 0; font-size: 0.9rem;">
+                        <li><strong>Mi INDAP:</strong> Sucursal virtual para trámites.</li>
+                        <li><strong>Mi Pago INDAP:</strong> +62 mil agricultores pagan créditos en línea, evitando viajes de hasta 50 km.</li>
+                        <li><strong>Apolo:</strong> Postulación a proyectos de inversión.</li>
+                    </ul>
+                </div>
+                <div style="background: var(--yellow-light); padding: 1rem; border-radius: 12px; border: 1px solid var(--yellow);">
+                    <h4 style="display: flex; gap: 0.5rem;"><i class="fas fa-graduation-cap" style="color: var(--yellow-dark);"></i> Iniciativas activas</h4>
+                    <ul style="list-style: none; padding: 0; font-size: 0.9rem;">
+                        <li><strong>FAO Ñuble:</strong> 150 usuarios con alfabetización digital.</li>
+                        <li><strong>Mujeres rurales:</strong> 495 capacitadas en marketing digital (Valparaíso).</li>
+                        <li><strong>Chile Mayor Digital:</strong> Plazas itinerantes para adultos mayores.</li>
+                    </ul>
+                </div>
             </div>
         </section>
 
-        <!-- ======== SECCIÓN 3: ALFABETIZACIÓN DIGITAL ======== -->
+        <!-- ==================================================== -->
+        <!-- ===== SECCIÓN 3: ALFABETIZACIÓN ===== -->
+        <!-- ==================================================== -->
         <section>
-            <h2><i class="fas fa-graduation-cap"></i> Alfabetización y habilidades digitales</h2>
-            <p class="subh">Brecha de segundo nivel: más de la mitad de la población carece de habilidades intermedias o avanzadas.</p>
+            <h2 class="section-title"><i class="fas fa-graduation-cap"></i> 3. Alfabetización digital</h2>
+            <p class="section-sub">La <strong>brecha de segundo nivel</strong> es la más crítica: aunque tengan acceso, muchas personas rurales carecen de las habilidades para aprovecharlo.</p>
 
-            <div class="grid-2col">
+            <div class="chart-grid-2">
                 <div class="chart-box">
                     <h3><i class="fas fa-layer-group"></i> Nivel de habilidades digitales</h3>
-                    <canvas id="chartHabilidades" width="300" height="200"></canvas>
-                    <div class="footnote">Solo 7.2% tiene habilidades avanzadas</div>
+                    <canvas id="chartHabilidades" width="300" height="180"></canvas>
+                    <div class="footnote">Solo el 7.2% tiene habilidades avanzadas. El 47.1% no posee ninguna habilidad avanzada.</div>
                 </div>
                 <div class="chart-box">
-                    <h3><i class="fas fa-person-walking"></i> Adultos mayores y uso de computador</h3>
-                    <canvas id="chartAdultos" width="300" height="200"></canvas>
-                    <div class="footnote">53.3% nunca ha usado computador</div>
+                    <h3><i class="fas fa-person-walking"></i> Adultos mayores y computadores</h3>
+                    <canvas id="chartAdultos" width="300" height="180"></canvas>
+                    <div class="footnote">Más de la mitad (53.3%) nunca ha usado un computador.</div>
                 </div>
             </div>
 
-            <div style="margin-top:1.2rem;">
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr><th>Habilidad</th><th>% con todas</th><th>% sin ninguna</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>Básicas</td><td>54%</td><td>5%</td></tr>
-                            <tr><td>Intermedias</td><td>19%</td><td>10%</td></tr>
-                            <tr><td>Avanzadas</td><td>7.2%</td><td>47.1%</td></tr>
-                        </tbody>
-                    </table>
+            <div class="callout-gap" style="background: var(--gray-900); border-left-color: var(--yellow); color: white; justify-content: flex-start; gap: 1.5rem;">
+                <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                    <div><span style="color: var(--yellow); font-weight: 800; font-size: 1.2rem;">34.9%</span> "Nadie en el hogar sabe usarlo"</div>
+                    <div><span style="color: var(--yellow); font-weight: 800; font-size: 1.2rem;">27.6%</span> "No me interesa"</div>
+                    <div><span style="color: var(--yellow); font-weight: 800; font-size: 1.2rem;">18.6%</span> "Alto costo"</div>
                 </div>
-                <p style="font-size:0.95rem; background:#f7faff; padding:0.8rem 1.2rem; border-radius:12px;">
-                    <i class="fas fa-exclamation-circle" style="color:#d52b1e;"></i>
-                    <strong>Razones para no tener internet:</strong> 34.9% “ningún miembro sabría usarlo”, 27.6% “no me interesa”, 18.6% “alto costo”.
-                    <br />
-                    <i class="fas fa-chalkboard-user"></i> <strong>Programas:</strong> Ruta de Alfabetización Digital (MINEDUC–SEGEGOB), formación a 1.000 profesores rurales, piloto FAO en Ñuble.
-                </p>
+                <div style="color: var(--gray-300); font-size: 0.9rem;"><i class="fas fa-quote-right"></i> Razones principales para no tener internet en el hogar.</div>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; background: var(--gray-100); padding: 1rem; border-radius: 12px;">
+                <span class="tag-yellow"><i class="fas fa-chalkboard-user"></i> Programas clave</span>
+                <span>Ruta de Alfabetización Digital (MINEDUC)</span>
+                <span>·</span>
+                <span>Formación a 1.000 profesores rurales</span>
+                <span>·</span>
+                <span>Piloto FAO Ñuble</span>
             </div>
         </section>
 
-        <!-- ======== SECCIÓN 4: POLÍTICAS PÚBLICAS ======== -->
+        <!-- ==================================================== -->
+        <!-- ===== SECCIÓN 4: POLÍTICAS PÚBLICAS ===== -->
+        <!-- ==================================================== -->
         <section>
-            <h2><i class="fas fa-landmark"></i> Políticas públicas clave (2024–2026)</h2>
+            <h2 class="section-title"><i class="fas fa-landmark"></i> 4. Políticas públicas (2024–2026)</h2>
+            <p class="section-sub">Estrategia integrada que combina <strong>infraestructura (fibra)</strong> con <strong>formación (alfabetización)</strong>, aunque el despliegue territorial aún es desigual.</p>
+
             <div class="policy-grid">
                 <div class="policy-card">
                     <h4>Plan Ciudadanía Digital</h4>
                     <div class="focus">SEGEGOB + MINEDUC</div>
-                    <p>Alfabetización mediática, informacional y digital; descentralización y enfoque territorial.</p>
+                    <p>Alfabetización mediática y digital con enfoque descentralizado y territorial.</p>
                 </div>
-                <div class="policy-card" style="border-left-color:#d52b1e;">
+                <div class="policy-card">
                     <h4>Última Milla</h4>
-                    <div class="focus">SUBTEL</div>
-                    <p>Más de US$116 millones para conectar zonas rurales.</p>
+                    <div class="focus">SUBTEL · US$116M</div>
+                    <p>Conectividad a zonas rurales aisladas.</p>
                 </div>
-                <div class="policy-card" style="border-left-color:#1a7a3a;">
+                <div class="policy-card">
                     <h4>Hogares Digitales</h4>
-                    <div class="focus">SUBTEL</div>
-                    <p>Fibra óptica a comunas sin oferta comercial; meta 2026: todas las comunas continentales.</p>
+                    <div class="focus">Fibra óptica</div>
+                    <p>Meta 2026: todas las comunas continentales con cobertura de fibra.</p>
                 </div>
-                <div class="policy-card" style="border-left-color:#b8860b;">
+                <div class="policy-card">
                     <h4>Escuelas Conectadas</h4>
                     <div class="focus">Internet gratuito</div>
-                    <p>203 escuelas rurales, 50 mil estudiantes y 4 mil docentes beneficiados.</p>
+                    <p>203 escuelas rurales beneficiadas (50 mil estudiantes).</p>
                 </div>
-                <div class="policy-card" style="border-left-color:#2a7a8a;">
+                <div class="policy-card">
                     <h4>Chile Mayor Digital 2.0</h4>
-                    <div class="focus">Plazas Digitales itinerantes</div>
-                    <p>Alfabetización para adultos mayores en regiones agrícolas (Araucanía, Maule, O'Higgins).</p>
+                    <div class="focus">Plazas itinerantes</div>
+                    <p>Capacitación a adultos mayores en regiones agrícolas (Araucanía, Maule, O'Higgins).</p>
                 </div>
-                <div class="policy-card" style="border-left-color:#5a3a7a;">
+                <div class="policy-card">
                     <h4>Piloto FAO–Gobierno</h4>
                     <div class="focus">Ñuble</div>
-                    <p>Conectividad + alfabetización para 150 usuarios rurales, con INDAP y SENCE.</p>
+                    <p>Conectividad + alfabetización para 150 usuarios rurales con INDAP y SENCE.</p>
                 </div>
             </div>
-            <p style="margin-top:1.2rem; font-size:0.95rem; color:#3d4a5c;">
-                <i class="fas fa-arrows-spin" style="color:#0033a0;"></i>
-                <strong>Síntesis:</strong> La estrategia pública integra infraestructura (fibra, última milla) y formación (alfabetización), pero el desfase territorial sigue siendo crítico: muchas localidades aún sin conectividad fija y sin capacitación cercana.
-            </p>
+
+            <div style="margin-top: 1.5rem; background: var(--gray-900); color: white; padding: 1.2rem 1.8rem; border-radius: 16px; border-left: 8px solid var(--yellow);">
+                <p style="font-size: 1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                    <i class="fas fa-bullseye" style="color: var(--yellow); font-size: 1.5rem;"></i>
+                    <strong>Síntesis:</strong> La cobertura móvil ya casi no es problema (94.5%), pero la <strong>brecha de calidad (fijo)</strong> y la <strong>brecha de habilidades</strong> siguen siendo los dos grandes desafíos estructurales para la inclusión digital real en el Chile rural.
+                </p>
+            </div>
         </section>
 
-        <!-- ======== PIE ======== -->
+        <!-- ======== FOOTER ======== -->
         <footer>
             <span>
-                <i class="fas fa-database"></i> Datos actualizados 2024–2025 · Fuentes: SUBTEL, BCN, INDAP, MINEDUC
+                <i class="fas fa-database"></i> Datos abiertos · SUBTEL, BCN, INDAP, MINEDUC (2024–2025)
             </span>
             <span>
-                <i class="fab fa-github"></i> <a href="#">Código en GitHub</a> ·
-                <i class="fas fa-code"></i> Radiografía Interactiva v1.0
+                <i class="fab fa-github"></i> <a href="#">Código en GitHub</a>
+                <i class="fas fa-palette" style="margin-left: 0.8rem;"></i> Amarillo · Gris · Negro · Blanco
             </span>
         </footer>
 
@@ -483,184 +622,157 @@
     <!-- ======== SCRIPTS ======== -->
     <script>
         (function() {
-            // ---- Configuración de colores ----
-            const colors = {
-                blue: '#0033a0',
-                red: '#d52b1e',
-                lightBlue: '#4a7fc1',
-                lightRed: '#e07a6e',
-                gray: '#8a9aa8',
-                green: '#1a7a3a',
-                orange: '#e68a2e',
-                purple: '#6a4a8a'
-            };
+            // Colores de la paleta
+            const YELLOW = '#eab308';
+            const YELLOW_LIGHT = 'rgba(234, 179, 8, 0.2)';
+            const GRAY_900 = '#111827';
+            const GRAY_500 = '#6b7280';
+            const GRAY_300 = '#d1d5db';
+            const GRAY_100 = '#f3f4f6';
+            const WHITE = '#ffffff';
 
-            // ---- 1. Gráfico: Internet fijo urbano vs rural ----
-            const ctxFijo = document.getElementById('chartFijo').getContext('2d');
-            new Chart(ctxFijo, {
+            // 1. Fijo Urbano vs Rural
+            new Chart(document.getElementById('chartFijo'), {
                 type: 'bar',
                 data: {
                     labels: ['Urbano', 'Rural'],
                     datasets: [{
-                        label: 'Hogares con internet fijo',
+                        label: '% con internet fijo',
                         data: [72, 32],
-                        backgroundColor: [colors.blue, colors.red],
-                        borderRadius: 8,
+                        backgroundColor: [YELLOW, GRAY_900],
+                        borderRadius: 6,
+                        barPercentage: 0.5,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: { callback: v => v + '%' }
-                        }
+                        y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%', color: GRAY_500 } },
+                        x: { ticks: { color: GRAY_900, font: { weight: 'bold' } } }
                     }
                 }
             });
 
-            // ---- 2. Evolución fijo rural ----
-            const ctxEvol = document.getElementById('chartEvolucion').getContext('2d');
-            new Chart(ctxEvol, {
+            // 2. Evolución fijo rural
+            new Chart(document.getElementById('chartEvolucion'), {
                 type: 'line',
                 data: {
                     labels: ['2021', '2022', '2023', '2024'],
                     datasets: [{
                         label: '% hogares rurales con fijo',
                         data: [17, 19, 21, 24],
-                        borderColor: colors.blue,
-                        backgroundColor: 'rgba(0,51,160,0.05)',
+                        borderColor: YELLOW,
+                        backgroundColor: YELLOW_LIGHT,
                         tension: 0.2,
                         fill: true,
-                        pointBackgroundColor: colors.blue,
+                        pointBackgroundColor: GRAY_900,
+                        pointBorderColor: WHITE,
+                        pointBorderWidth: 2,
                         pointRadius: 5,
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 30,
-                            ticks: { callback: v => v + '%' }
-                        }
+                        y: { beginAtZero: true, max: 30, ticks: { callback: v => v + '%', color: GRAY_500 } },
+                        x: { ticks: { color: GRAY_900 } }
                     }
                 }
             });
 
-            // ---- 3. Uso SII por nivel socioeconómico ----
-            const ctxSII = document.getElementById('chartSII').getContext('2d');
-            new Chart(ctxSII, {
+            // 3. SII por nivel socioeconómico
+            new Chart(document.getElementById('chartSII'), {
                 type: 'bar',
                 data: {
-                    labels: ['ABC1', 'D/E'],
+                    labels: ['ABC1 (Alto)', 'D/E (Bajo)'],
                     datasets: [{
                         label: 'Usan SII online',
                         data: [96, 51],
-                        backgroundColor: [colors.blue, colors.red],
+                        backgroundColor: [YELLOW, GRAY_500],
                         borderRadius: 6,
+                        barPercentage: 0.5,
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: { callback: v => v + '%' }
-                        }
+                        y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%', color: GRAY_500 } },
+                        x: { ticks: { color: GRAY_900 } }
                     }
                 }
             });
 
-            // ---- 4. Uso SII por edad ----
-            const ctxEdad = document.getElementById('chartEdad').getContext('2d');
-            new Chart(ctxEdad, {
+            // 4. SII por edad
+            new Chart(document.getElementById('chartEdad'), {
                 type: 'bar',
                 data: {
                     labels: ['31–40 años', 'Mayores de 60'],
                     datasets: [{
                         label: 'Usan SII online',
                         data: [79, 51],
-                        backgroundColor: [colors.blue, colors.gray],
+                        backgroundColor: [YELLOW, GRAY_300],
                         borderRadius: 6,
+                        barPercentage: 0.5,
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: { callback: v => v + '%' }
-                        }
+                        y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%', color: GRAY_500 } },
+                        x: { ticks: { color: GRAY_900 } }
                     }
                 }
             });
 
-            // ---- 5. Niveles de habilidad digital (todas / ninguna) ----
-            const ctxHab = document.getElementById('chartHabilidades').getContext('2d');
-            new Chart(ctxHab, {
+            // 5. Habilidades digitales (Todas vs Ninguna)
+            new Chart(document.getElementById('chartHabilidades'), {
                 type: 'bar',
                 data: {
                     labels: ['Básicas', 'Intermedias', 'Avanzadas'],
                     datasets: [{
                         label: 'Tiene todas',
                         data: [54, 19, 7.2],
-                        backgroundColor: colors.blue,
+                        backgroundColor: YELLOW,
                         borderRadius: 4,
                     }, {
                         label: 'No tiene ninguna',
                         data: [5, 10, 47.1],
-                        backgroundColor: colors.red,
+                        backgroundColor: GRAY_500,
                         borderRadius: 4,
                     }]
                 },
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: { position: 'top', labels: { boxWidth: 12 } }
+                        legend: { position: 'top', labels: { boxWidth: 12, color: GRAY_900 } }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 60,
-                            ticks: { callback: v => v + '%' }
-                        }
+                        y: { beginAtZero: true, max: 60, ticks: { callback: v => v + '%', color: GRAY_500 } },
+                        x: { ticks: { color: GRAY_900 } }
                     }
                 }
             });
 
-            // ---- 6. Adultos mayores y uso de computador ----
-            const ctxAdultos = document.getElementById('chartAdultos').getContext('2d');
-            new Chart(ctxAdultos, {
+            // 6. Adultos mayores y computador (Doughnut)
+            new Chart(document.getElementById('chartAdultos'), {
                 type: 'doughnut',
                 data: {
-                    labels: ['Nunca ha usado computador', 'Usó en últimos 3 meses'],
+                    labels: ['Nunca usó computador', 'Usó en últimos 3 meses'],
                     datasets: [{
                         data: [53.3, 29],
-                        backgroundColor: [colors.red, colors.blue],
+                        backgroundColor: [GRAY_900, YELLOW],
                         borderWidth: 0,
                     }]
                 },
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12 } }
+                        legend: { position: 'bottom', labels: { boxWidth: 12, color: GRAY_900 } }
                     },
                     cutout: '65%',
                 }
