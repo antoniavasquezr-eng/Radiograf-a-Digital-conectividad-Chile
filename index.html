@@ -1,785 +1,824 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Radiografía Conectividad Rural · Chile</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Radiografía · Conectividad Rural — Fundación 99</title>
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
-    </script>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
+<!-- Cambiar la CDN a jsdelivr para mejor compatibilidad -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-    <style>
-        /* ===== PALETA DE COLORES ===== */
-        :root {
-            --yellow: #eab308;
-            --yellow-light: #fef9c3;
-            --yellow-dark: #a16207;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-500: #6b7280;
-            --gray-700: #374151;
-            --gray-900: #111827;
-            --black: #000000;
-            --white: #ffffff;
-        }
+<style>
+  :root{
+    --ink:        #24282B;
+    --ink-2:      #14171A;
+    --yellow:     #F7D913;
+    --yellow-dim: #E9C900;
+    --paper:      #F6F5F1;
+    --paper-2:    #EFEDE6;
+    --white:      #FFFFFF;
+    --gray:       #6D7175;
+    --gray-soft:  #9A9D9F;
+    --line:       #E1DFD8;
+    --radius-s:   10px;
+    --radius-m:   16px;
+    --radius-l:   26px;
+    --ease: cubic-bezier(.22,1,.36,1);
+  }
 
-        /* ===== RESET Y BASE ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  *{ margin:0; padding:0; box-sizing:border-box; }
 
-        body {
-            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--gray-100);
-            color: var(--gray-900);
-            padding: 2rem 1rem;
-            line-height: 1.5;
-        }
+  html{ scroll-behavior:smooth; }
 
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            background: var(--white);
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
-            padding: 2rem 2.5rem;
-            border: 1px solid var(--gray-200);
-        }
+  body{
+    font-family:'Montserrat', system-ui, sans-serif;
+    background:var(--white);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
 
-        /* ===== HEADER (Negro + Amarillo) ===== */
-        .header-dark {
-            background: var(--gray-900);
-            margin: -2rem -2.5rem 2.5rem -2.5rem;
-            padding: 2.5rem 2.5rem 2rem 2.5rem;
-            border-radius: 24px 24px 0 0;
-            border-bottom: 6px solid var(--yellow);
-        }
+  img{ max-width:100%; display:block; }
 
-        .header-dark h1 {
-            font-size: 2.8rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            color: var(--white);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
+  a{ color:inherit; }
 
-        .header-dark h1 span {
-            color: var(--yellow);
-        }
+  ::selection{ background:var(--yellow); color:var(--ink-2); }
 
-        .header-dark .subhead {
-            color: var(--gray-300);
-            font-size: 1.2rem;
-            margin-top: 0.25rem;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
+  *:focus-visible{ outline:2px solid var(--yellow); outline-offset:3px; }
 
-        .header-dark .badge-date {
-            background: var(--yellow);
-            color: var(--gray-900);
-            padding: 0.2rem 1.2rem;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
 
-        /* ===== KPI CARDS (Resumen) ===== */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.2rem;
-            margin-bottom: 2.5rem;
-        }
+  .eyebrow{
+    display:flex; align-items:center; gap:0.6rem;
+    font-size:0.72rem; font-weight:700; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--gray);
+  }
+  .eyebrow .tab{
+    width:9px; height:16px; background:var(--yellow); flex:none;
+  }
+  .eyebrow.on-dark{ color:var(--paper-2); }
 
-        @media (max-width: 700px) {
-            .kpi-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .container {
-                padding: 1rem;
-            }
-            .header-dark {
-                margin: -1rem -1rem 1.5rem -1rem;
-                padding: 1.5rem 1rem;
-            }
-            .header-dark h1 {
-                font-size: 1.8rem;
-                flex-wrap: wrap;
-            }
-        }
+  /* ============ TOP BAR ============ */
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0.9rem 1.6rem;
+    background:rgba(255,255,255,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar__brand{
+    display:flex; align-items:center; gap:0.7rem;
+  }
+  /* Reemplazamos la imagen por un texto estilizado */
+  .topbar__brand .logo-text{
+    font-weight:900;
+    font-size:1.4rem;
+    background:var(--yellow);
+    color:var(--ink-2);
+    padding:0.1rem 0.6rem;
+    border-radius:6px;
+    line-height:1.3;
+    letter-spacing:-0.02em;
+    display:inline-block;
+  }
+  .topbar__brand .logo-text small{
+    font-size:0.6rem;
+    font-weight:600;
+    color:var(--gray);
+    background:transparent;
+    display:block;
+    margin-top:-2px;
+    letter-spacing:0.04em;
+  }
+  .topbar__brand span{ font-weight:800; font-size:0.95rem; letter-spacing:-0.01em; }
+  .topbar__meta{ font-size:0.75rem; color:var(--gray); font-weight:600; display:flex; align-items:center; gap:0.5rem; }
+  .topbar__meta .dot{ width:6px; height:6px; border-radius:50%; background:var(--yellow); }
+  @media (max-width:680px){ .topbar__meta{ display:none; } }
 
-        .kpi-card {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: 16px;
-            padding: 1.2rem 1rem;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-            transition: 0.2s;
-            border-bottom: 4px solid var(--yellow);
-        }
+  /* ============ SIGNAL SPINE NAV ============ */
+  .spine{
+    position:fixed; z-index:50;
+    left:1.4rem; top:50%; transform:translateY(-50%);
+    display:flex; flex-direction:column; gap:1.1rem;
+    list-style:none;
+  }
+  .spine li{ display:flex; }
+  .spine button{
+    all:unset; cursor:pointer; display:flex; align-items:center; gap:0.6rem;
+    group:nav;
+  }
+  .spine .bar{
+    width:5px; height:26px; background:var(--line); border-radius:3px;
+    transition:height .35s var(--ease), background .35s var(--ease);
+  }
+  .spine .num{
+    font-size:0.68rem; font-weight:800; color:var(--gray-soft);
+    opacity:0; transform:translateX(-4px);
+    transition:opacity .25s, transform .25s;
+    white-space:nowrap;
+  }
+  .spine button:hover .num,
+  .spine button.active .num{ opacity:1; transform:translateX(0); color:var(--ink); }
+  .spine button.active .bar{ height:42px; background:var(--yellow); }
+  .spine button:hover .bar{ background:var(--ink); }
 
-        .kpi-card .number {
-            font-size: 2.6rem;
-            font-weight: 800;
-            color: var(--gray-900);
-            line-height: 1.1;
-        }
+  @media (max-width:900px){
+    .spine{
+      left:0; right:0; top:auto; bottom:0; transform:none;
+      flex-direction:row; justify-content:stretch; gap:0;
+      background:var(--white); border-top:1px solid var(--line);
+      padding:0.5rem 0.8rem;
+    }
+    .spine li{ flex:1; }
+    .spine button{ flex-direction:column; width:100%; align-items:center; gap:0.3rem; }
+    .spine .bar{ width:100%; height:4px; }
+    .spine button.active .bar{ height:4px; width:100%; }
+    .spine .num{ opacity:1; transform:none; font-size:0.58rem; }
+  }
 
-        .kpi-card .number small {
-            font-size: 1rem;
-            font-weight: 400;
-            color: var(--gray-500);
-        }
+  /* ============ HERO ============ */
+  .hero{
+    background:var(--ink-2);
+    color:var(--white);
+    padding:5rem 1.6rem 4rem;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero__inner{
+    max-width:1180px; margin:0 auto;
+    display:grid; grid-template-columns:1.15fr 0.85fr; gap:3rem; align-items:end;
+  }
+  .hero h1{
+    font-size:clamp(2.6rem, 5.6vw, 4.6rem);
+    font-weight:900; line-height:0.98; letter-spacing:-0.02em;
+    margin-top:1.2rem;
+  }
+  .hero h1 em{ font-style:normal; color:var(--yellow); }
+  .hero p.lede{
+    margin-top:1.3rem; max-width:46ch; color:#C9CBCC; font-size:1.05rem; font-weight:500; line-height:1.55;
+  }
+  .hero__source{
+    margin-top:1.6rem; display:flex; flex-wrap:wrap; gap:0.5rem 1.2rem;
+    font-size:0.78rem; color:#9A9D9F; font-weight:600;
+  }
 
-        .kpi-card .label {
-            font-size: 0.85rem;
-            color: var(--gray-500);
-            font-weight: 500;
-            margin-top: 0.2rem;
-        }
+  .signal-graphic{
+    display:flex; align-items:flex-end; gap:0.7rem; height:190px;
+    justify-content:flex-end;
+  }
+  .signal-graphic .col{ display:flex; flex-direction:column; align-items:center; gap:0.6rem; }
+  .signal-graphic .col .bar{
+    width:22px; border-radius:5px 5px 2px 2px; background:#3A3F42;
+    transform:scaleY(0); transform-origin:bottom; animation:grow 1s var(--ease) forwards;
+  }
+  .signal-graphic .col.on .bar{ background:var(--yellow); }
+  .signal-graphic .col span{ font-size:0.68rem; font-weight:700; color:#8B8E90; }
+  @keyframes grow{ to{ transform:scaleY(1); } }
 
-        /* ===== SECCIONES ===== */
-        section {
-            margin-bottom: 3rem;
-        }
+  .toggle-row{
+    margin-top:2rem; display:flex; align-items:center; gap:0.9rem; flex-wrap:wrap;
+  }
+  .toggle-row .toggle-label{ font-size:0.78rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#9A9D9F; }
+  .toggle{
+    display:inline-flex; background:#2C3033; border-radius:999px; padding:4px; gap:2px;
+    border:1px solid #3A3F42;
+  }
+  .toggle button{
+    all:unset; cursor:pointer; padding:0.5rem 1.1rem; border-radius:999px;
+    font-size:0.8rem; font-weight:700; color:#9A9D9F; transition:.25s var(--ease);
+  }
+  .toggle button.active{ background:var(--yellow); color:var(--ink-2); }
 
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 0.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            border-bottom: 3px solid var(--yellow);
-            padding-bottom: 0.4rem;
-        }
+  /* ============ LAYOUT SHELL ============ */
+  .shell{ max-width:1180px; margin:0 auto; padding:0 1.6rem; }
 
-        .section-sub {
-            color: var(--gray-500);
-            font-weight: 400;
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-            margin-top: -0.2rem;
-        }
+  /* ============ KPI BAND ============ */
+  .kpis{ padding:3.2rem 0 1rem; }
+  .kpi-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1.1rem; }
+  @media (max-width:900px){ .kpi-grid{ grid-template-columns:1fr 1fr; } }
+  .kpi{
+    position:relative; background:var(--paper); border:1px solid var(--line);
+    border-radius:var(--radius-m); padding:1.6rem 1.3rem 1.4rem;
+    overflow:hidden;
+  }
+  .kpi::before{
+    content:''; position:absolute; top:0; right:0; width:14px; height:26px; background:var(--yellow);
+  }
+  .kpi .number{ font-size:clamp(2.1rem,3.4vw,2.7rem); font-weight:900; letter-spacing:-0.02em; line-height:1; }
+  .kpi .number .suffix{ font-size:0.55em; font-weight:700; color:var(--yellow-dim); margin-left:2px; }
+  .kpi .label{ margin-top:0.55rem; font-size:0.84rem; color:var(--gray); font-weight:600; line-height:1.4; }
 
-        /* ===== GRID DE GRÁFICOS ===== */
-        .chart-grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 1.5rem;
-        }
+  /* ============ SECTION SHARED ============ */
+  section.block{ padding:4.4rem 0; border-top:1px solid var(--line); }
+  .block__head{ margin-bottom:2.2rem; max-width:62ch; }
+  .block__head h2{
+    font-size:clamp(1.9rem,3.4vw,2.7rem); font-weight:900; letter-spacing:-0.02em; margin-top:0.6rem;
+  }
+  .block__head p{ margin-top:0.7rem; color:var(--gray); font-size:1.02rem; font-weight:500; line-height:1.55; }
 
-        @media (max-width: 800px) {
-            .chart-grid-2 {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-        }
+  .chart-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1.6rem; margin:1.8rem 0; }
+  @media (max-width:800px){ .chart-grid{ grid-template-columns:1fr; } }
 
-        .chart-box {
-            background: var(--gray-100);
-            border-radius: 16px;
-            padding: 1.2rem 1rem 0.8rem;
-            border: 1px solid var(--gray-200);
-        }
+  .chart-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-m);
+    padding:1.4rem 1.4rem 1rem;
+  }
+  .chart-card h3{ font-size:0.92rem; font-weight:700; margin-bottom:0.9rem; display:flex; align-items:center; gap:0.5rem; }
+  .chart-card h3::before{ content:''; width:8px; height:8px; background:var(--yellow); flex:none; }
+  .chart-card .canvas-wrap{ height:210px; position:relative; }
+  .chart-card .footnote{
+    font-size:0.75rem; color:var(--gray); border-top:1px solid var(--line);
+    margin-top:0.8rem; padding-top:0.6rem;
+  }
 
-        .chart-box h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--gray-700);
-            margin-bottom: 0.5rem;
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
+  /* callout */
+  .callout{
+    background:var(--paper-2); border-left:6px solid var(--yellow); border-radius:0 var(--radius-m) var(--radius-m) 0;
+    padding:1.3rem 1.6rem; margin:1.6rem 0;
+    display:flex; flex-wrap:wrap; gap:1rem; justify-content:space-between; align-items:center;
+  }
+  .callout .big{ font-size:2rem; font-weight:900; letter-spacing:-0.01em; }
+  .callout .desc{ font-weight:600; color:var(--ink); font-size:0.95rem; }
+  .callout .tags{ display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; }
+  .pill{
+    font-size:0.75rem; font-weight:800; padding:0.32rem 0.85rem; border-radius:999px;
+    background:var(--yellow); color:var(--ink-2);
+  }
+  .pill.dark{ background:var(--ink); color:var(--white); }
+  .vs{ font-size:0.8rem; color:var(--gray); font-weight:700; }
 
-        .chart-box canvas {
-            max-height: 200px;
-            max-width: 100%;
-        }
+  /* table */
+  .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius-m); margin:1.4rem 0; }
+  table{ width:100%; border-collapse:collapse; font-size:0.9rem; min-width:520px; }
+  th{ background:var(--ink); color:var(--white); text-align:left; padding:0.8rem 1.1rem; font-weight:700; font-size:0.78rem; letter-spacing:0.04em; text-transform:uppercase; }
+  td{ padding:0.75rem 1.1rem; border-bottom:1px solid var(--line); font-weight:600; }
+  tr:last-child td{ border-bottom:none; }
+  td.hi{ background:#FCF3C8; font-weight:800; }
 
-        .chart-box .footnote {
-            font-size: 0.75rem;
-            color: var(--gray-500);
-            text-align: right;
-            border-top: 1px solid var(--gray-200);
-            padding-top: 0.4rem;
-            margin-top: 0.3rem;
-        }
+  .strip{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:1rem;
+  }
+  @media (max-width:800px){ .strip{ grid-template-columns:1fr; } }
+  .strip .item{
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-s);
+    padding:1rem 1.1rem; font-size:0.87rem; font-weight:600; color:var(--ink); line-height:1.5;
+  }
+  .strip .item b.tag{
+    display:inline-block; background:var(--ink); color:var(--yellow); font-size:0.68rem; font-weight:800;
+    padding:0.18rem 0.5rem; border-radius:5px; margin-right:0.4rem; text-transform:uppercase; letter-spacing:0.03em;
+  }
 
-        /* ===== CALLOUT / DESTACADO ===== */
-        .callout-gap {
-            background: var(--yellow-light);
-            border-left: 6px solid var(--yellow);
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            margin: 1.2rem 0;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-        }
+  /* two-col info cards */
+  .info-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1.4rem; margin-top:1.6rem; }
+  @media (max-width:800px){ .info-grid{ grid-template-columns:1fr; } }
+  .info-card{ border-radius:var(--radius-m); padding:1.5rem 1.5rem; border:1px solid var(--line); }
+  .info-card.neutral{ background:var(--paper); }
+  .info-card.accent{ background:var(--ink); color:var(--white); border-color:var(--ink); }
+  .info-card h4{ font-size:1rem; font-weight:800; margin-bottom:0.9rem; display:flex; align-items:center; gap:0.6rem; }
+  .info-card h4 .sq{ width:9px; height:9px; background:var(--yellow); flex:none; }
+  .info-card ul{ list-style:none; display:flex; flex-direction:column; gap:0.65rem; }
+  .info-card li{ font-size:0.88rem; line-height:1.5; font-weight:500; }
+  .info-card.accent li{ color:#D8D9DA; }
+  .info-card li b{ font-weight:800; }
+  .info-card.accent li b{ color:var(--yellow); }
 
-        .callout-gap .big {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--gray-900);
-        }
+  /* reason chips */
+  .reasons{ margin-top:1.6rem; }
+  .reasons__grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+  @media (max-width:800px){ .reasons__grid{ grid-template-columns:1fr; } }
+  .reason{
+    all:unset; cursor:pointer; background:var(--ink); color:var(--white);
+    border-radius:var(--radius-m); padding:1.2rem 1.3rem; display:block;
+    border:1px solid var(--ink); transition:.25s var(--ease);
+  }
+  .reason:hover{ background:var(--ink-2); }
+  .reason .pct{ font-size:1.7rem; font-weight:900; color:var(--yellow); }
+  .reason .txt{ font-size:0.86rem; font-weight:600; color:#D8D9DA; margin-top:0.35rem; }
+  .reason .note{
+    max-height:0; overflow:hidden; opacity:0; transition:max-height .35s var(--ease), opacity .3s, margin .35s;
+    font-size:0.8rem; color:#9FA2A3; font-weight:500; line-height:1.5;
+  }
+  .reason.open .note{ max-height:120px; opacity:1; margin-top:0.7rem; }
+  .reason .hint{ font-size:0.68rem; color:#6E7274; margin-top:0.6rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; }
 
-        .callout-gap .desc {
-            font-weight: 500;
-            color: var(--gray-700);
-        }
+  /* accordion policies */
+  .policies{ display:flex; flex-direction:column; gap:0.8rem; margin-top:1.6rem; }
+  .policy{
+    border:1px solid var(--line); border-radius:var(--radius-m); overflow:hidden; background:var(--paper);
+    transition:border-color .25s;
+  }
+  .policy.open{ border-color:var(--yellow); }
+  .policy__head{
+    all:unset; cursor:pointer; width:100%; display:flex; align-items:center; justify-content:space-between;
+    padding:1.1rem 1.3rem; gap:1rem;
+  }
+  .policy__head:hover{ background:var(--paper-2); }
+  .policy__title{ display:flex; align-items:center; gap:1rem; }
+  .policy__title .idx{ font-size:0.75rem; font-weight:800; color:var(--gray-soft); }
+  .policy__title h4{ font-size:1rem; font-weight:800; }
+  .policy__title .focus{ font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--gray); }
+  .policy__chevron{
+    width:24px; height:24px; flex:none; border-radius:50%; border:1.5px solid var(--line);
+    display:flex; align-items:center; justify-content:center; transition:transform .3s var(--ease), background .3s, border-color .3s;
+    font-size:0.7rem; font-weight:900; color:var(--ink);
+  }
+  .policy.open .policy__chevron{ transform:rotate(45deg); background:var(--yellow); border-color:var(--yellow); }
+  .policy__body{ max-height:0; overflow:hidden; transition:max-height .4s var(--ease); }
+  .policy__body p{ padding:0 1.3rem 1.2rem; font-size:0.89rem; color:var(--gray); font-weight:500; line-height:1.55; max-width:62ch; }
 
-        /* ===== TABLAS ===== */
-        .table-wrap {
-            overflow-x: auto;
-            margin: 1rem 0;
-            border-radius: 12px;
-            border: 1px solid var(--gray-200);
-        }
+  /* synthesis */
+  .synthesis{
+    margin-top:2.2rem; background:var(--ink-2); color:var(--white); border-radius:var(--radius-l);
+    padding:2rem 2.2rem; border-left:8px solid var(--yellow); position:relative; overflow:hidden;
+  }
+  .synthesis .k{ font-size:0.72rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--yellow); }
+  .synthesis p{ margin-top:0.7rem; font-size:1.08rem; font-weight:500; line-height:1.6; max-width:70ch; }
+  .synthesis p b{ color:var(--yellow); font-weight:800; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
+  /* footer */
+  footer{
+    border-top:1px solid var(--line); margin-top:1rem; padding:2.4rem 0 3rem;
+  }
+  .footer-inner{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
+  .footer-brand{ display:flex; align-items:center; gap:0.8rem; }
+  .footer-brand .logo-text{
+    font-weight:900;
+    font-size:1.8rem;
+    background:var(--yellow);
+    color:var(--ink-2);
+    padding:0.1rem 0.6rem;
+    border-radius:6px;
+    line-height:1.2;
+    letter-spacing:-0.02em;
+    display:inline-block;
+  }
+  .footer-brand .logo-text small{
+    font-size:0.6rem;
+    font-weight:600;
+    color:var(--gray);
+    display:block;
+    margin-top:-2px;
+  }
+  .footer-brand span{ font-size:0.78rem; color:var(--gray); font-weight:600; max-width:32ch; line-height:1.4; }
+  .footer-swatch{ display:flex; gap:0.4rem; }
+  .footer-swatch i{ width:16px; height:16px; border-radius:4px; border:1px solid var(--line); }
 
-        th {
-            background: var(--gray-900);
-            color: var(--white);
-            padding: 0.7rem 1rem;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        td {
-            padding: 0.6rem 1rem;
-            border-bottom: 1px solid var(--gray-200);
-            background: var(--white);
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        .tag-yellow {
-            background: var(--yellow);
-            color: var(--gray-900);
-            font-weight: 700;
-            padding: 0.1rem 0.6rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-        }
-
-        .highlight-cell {
-            background: var(--yellow-light);
-            font-weight: 700;
-        }
-
-        /* ===== POLÍTICAS ===== */
-        .policy-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .policy-card {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: 14px;
-            padding: 1rem 1.2rem;
-            border-top: 4px solid var(--yellow);
-            transition: 0.15s;
-        }
-
-        .policy-card:hover {
-            background: var(--gray-100);
-        }
-
-        .policy-card h4 {
-            font-size: 1rem;
-            font-weight: 700;
-        }
-
-        .policy-card .focus {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-            color: var(--gray-500);
-            font-weight: 600;
-        }
-
-        .policy-card p {
-            font-size: 0.85rem;
-            color: var(--gray-700);
-            margin-top: 0.3rem;
-        }
-
-        /* ===== PIE ===== */
-        footer {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 2px solid var(--gray-200);
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            font-size: 0.8rem;
-            color: var(--gray-500);
-        }
-
-        footer a {
-            color: var(--gray-900);
-            font-weight: 600;
-            text-decoration: none;
-            border-bottom: 2px solid var(--yellow);
-        }
-
-        footer a:hover {
-            color: var(--black);
-        }
-
-        /* ===== UTIL ===== */
-        .flex-icon {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-        .mt-1 {
-            margin-top: 0.8rem;
-        }
-        .text-gray {
-            color: var(--gray-500);
-        }
-        .fw-bold {
-            font-weight: 700;
-        }
-    </style>
+  /* reveal on scroll */
+  .reveal{ opacity:0; transform:translateY(18px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+</style>
 </head>
 <body>
 
-    <div class="container">
-
-        <!-- ======== HEADER OSCURO ======== -->
-        <div class="header-dark">
-            <h1>
-                <i class="fas fa-signal" style="color: var(--yellow);"></i>
-                Radiografía <span>Conectividad Rural</span>
-            </h1>
-            <div class="subhead">
-                <span><i class="far fa-calendar-alt"></i> Actualizado 2024 – 2025 · Fuentes: SUBTEL, BCN, INDAP</span>
-                <span class="badge-date"><i class="fas fa-map-pin"></i> Chile</span>
-            </div>
-        </div>
-
-        <!-- ======== KPIs DE CABECERA ======== -->
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="number">94.5<small>%</small></div>
-                <div class="label">Hogares rurales con internet (propio)</div>
-            </div>
-            <div class="kpi-card">
-                <div class="number">32<small>%</small></div>
-                <div class="label">Hogares rurales con <strong>internet fijo</strong></div>
-            </div>
-            <div class="kpi-card">
-                <div class="number">54<small>%</small></div>
-                <div class="label">Población con habilidades <strong>básicas</strong></div>
-            </div>
-            <div class="kpi-card">
-                <div class="number">7.2<small>%</small></div>
-                <div class="label">Población con habilidades <strong>avanzadas</strong></div>
-            </div>
-        </div>
-
-        <!-- ==================================================== -->
-        <!-- ===== SECCIÓN 1: CONECTIVIDAD ===== -->
-        <!-- ==================================================== -->
-        <section>
-            <h2 class="section-title"><i class="fas fa-satellite-dish"></i> 1. Conectividad</h2>
-            <p class="section-sub">Cobertura móvil casi universal, pero el <strong>internet fijo de calidad</strong> es el gran pendiente en el mundo rural.</p>
-
-            <!-- CALLOUT: LA GRAN BRECHA -->
-            <div class="callout-gap">
-                <div>
-                    <span class="big">40 puntos</span>
-                    <span class="desc">de brecha en internet fijo entre urbano y rural</span>
-                </div>
-                <div>
-                    <span class="tag-yellow"><i class="fas fa-house"></i> Urbano 72%</span>
-                    <span style="margin:0 0.5rem; color:var(--gray-500);">vs</span>
-                    <span class="tag-yellow" style="background: var(--gray-900); color: white;">Rural 32%</span>
-                </div>
-            </div>
-
-            <div class="chart-grid-2">
-                <!-- Gráfico 1: Fijo Urbano vs Rural -->
-                <div class="chart-box">
-                    <h3><i class="fas fa-wifi"></i> Acceso a internet fijo</h3>
-                    <canvas id="chartFijo" width="300" height="180"></canvas>
-                    <div class="footnote">Brecha de calidad: solo 1 de cada 3 hogares rurales tiene fibra o cable.</div>
-                </div>
-
-                <!-- Gráfico 2: Evolución Rural -->
-                <div class="chart-box">
-                    <h3><i class="fas fa-chart-line"></i> Evolución del fijo en zonas rurales</h3>
-                    <canvas id="chartEvolucion" width="300" height="180"></canvas>
-                    <div class="footnote">Crecimiento lento: +7 puntos en 3 años (2021→2024).</div>
-                </div>
-            </div>
-
-            <!-- TABLA RESUMEN -->
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr><th>Indicador</th><th>Urbano</th><th>Rural</th><th>Brecha</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Hogares con internet (propio)</td>
-                            <td>96.8%</td>
-                            <td>94.5%</td>
-                            <td>2.3 pts</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Internet fijo (fibra/cable)</strong></td>
-                            <td>72%</td>
-                            <td class="highlight-cell">32%</td>
-                            <td class="highlight-cell">40 pts</td>
-                        </tr>
-                        <tr>
-                            <td>Hogares que solo usan móvil</td>
-                            <td>~25%</td>
-                            <td>&gt;25%</td>
-                            <td>Dependencia móvil</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; background: var(--gray-100); padding: 1rem; border-radius: 12px; margin-top: 0.8rem;">
-                <div><span class="tag-yellow"><i class="fas fa-triangle-exclamation"></i> Alerta</span> +2.000 localidades rurales sin servicios móviles ni fijos.</div>
-                <div><span class="tag-yellow"><i class="fas fa-school"></i> Escuelas</span> 98% tienen internet, pero solo 65% cuenta con <strong>alta velocidad</strong>.</div>
-                <div><span class="tag-yellow"><i class="fas fa-tower-broadcast"></i> Proyectos</span> Fibra WOM (161 comunas) · Hogares Digitales (meta 2026).</div>
-            </div>
-        </section>
-
-        <!-- ==================================================== -->
-        <!-- ===== SECCIÓN 2: DIGITALIZACIÓN ===== -->
-        <!-- ==================================================== -->
-        <section>
-            <h2 class="section-title"><i class="fas fa-laptop"></i> 2. Digitalización</h2>
-            <p class="section-sub">Plataformas públicas (<strong>Clave Única</strong>, <strong>Mi INDAP</strong>) avanzan, pero el uso real choca con la falta de conectividad fija y dispositivos adecuados.</p>
-
-            <div class="chart-grid-2">
-                <div class="chart-box">
-                    <h3><i class="fas fa-users"></i> Uso de SII online por nivel socioeconómico</h3>
-                    <canvas id="chartSII" width="300" height="180"></canvas>
-                    <div class="footnote">ABC1 96% vs D/E 51% — la brecha digital es también económica.</div>
-                </div>
-                <div class="chart-box">
-                    <h3><i class="fas fa-user-clock"></i> Uso de SII online por edad</h3>
-                    <canvas id="chartEdad" width="300" height="180"></canvas>
-                    <div class="footnote">Solo la mitad de los mayores de 60 años utiliza trámites digitales.</div>
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 0.5rem;">
-                <div style="background: var(--gray-100); padding: 1rem; border-radius: 12px;">
-                    <h4 style="display: flex; gap: 0.5rem; color: var(--gray-900);"><i class="fas fa-tractor" style="color: var(--yellow-dark);"></i> Plataformas INDAP</h4>
-                    <ul style="list-style: none; padding: 0; font-size: 0.9rem;">
-                        <li><strong>Mi INDAP:</strong> Sucursal virtual para trámites.</li>
-                        <li><strong>Mi Pago INDAP:</strong> +62 mil agricultores pagan créditos en línea, evitando viajes de hasta 50 km.</li>
-                        <li><strong>Apolo:</strong> Postulación a proyectos de inversión.</li>
-                    </ul>
-                </div>
-                <div style="background: var(--yellow-light); padding: 1rem; border-radius: 12px; border: 1px solid var(--yellow);">
-                    <h4 style="display: flex; gap: 0.5rem;"><i class="fas fa-graduation-cap" style="color: var(--yellow-dark);"></i> Iniciativas activas</h4>
-                    <ul style="list-style: none; padding: 0; font-size: 0.9rem;">
-                        <li><strong>FAO Ñuble:</strong> 150 usuarios con alfabetización digital.</li>
-                        <li><strong>Mujeres rurales:</strong> 495 capacitadas en marketing digital (Valparaíso).</li>
-                        <li><strong>Chile Mayor Digital:</strong> Plazas itinerantes para adultos mayores.</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================================================== -->
-        <!-- ===== SECCIÓN 3: ALFABETIZACIÓN ===== -->
-        <!-- ==================================================== -->
-        <section>
-            <h2 class="section-title"><i class="fas fa-graduation-cap"></i> 3. Alfabetización digital</h2>
-            <p class="section-sub">La <strong>brecha de segundo nivel</strong> es la más crítica: aunque tengan acceso, muchas personas rurales carecen de las habilidades para aprovecharlo.</p>
-
-            <div class="chart-grid-2">
-                <div class="chart-box">
-                    <h3><i class="fas fa-layer-group"></i> Nivel de habilidades digitales</h3>
-                    <canvas id="chartHabilidades" width="300" height="180"></canvas>
-                    <div class="footnote">Solo el 7.2% tiene habilidades avanzadas. El 47.1% no posee ninguna habilidad avanzada.</div>
-                </div>
-                <div class="chart-box">
-                    <h3><i class="fas fa-person-walking"></i> Adultos mayores y computadores</h3>
-                    <canvas id="chartAdultos" width="300" height="180"></canvas>
-                    <div class="footnote">Más de la mitad (53.3%) nunca ha usado un computador.</div>
-                </div>
-            </div>
-
-            <div class="callout-gap" style="background: var(--gray-900); border-left-color: var(--yellow); color: white; justify-content: flex-start; gap: 1.5rem;">
-                <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
-                    <div><span style="color: var(--yellow); font-weight: 800; font-size: 1.2rem;">34.9%</span> "Nadie en el hogar sabe usarlo"</div>
-                    <div><span style="color: var(--yellow); font-weight: 800; font-size: 1.2rem;">27.6%</span> "No me interesa"</div>
-                    <div><span style="color: var(--yellow); font-weight: 800; font-size: 1.2rem;">18.6%</span> "Alto costo"</div>
-                </div>
-                <div style="color: var(--gray-300); font-size: 0.9rem;"><i class="fas fa-quote-right"></i> Razones principales para no tener internet en el hogar.</div>
-            </div>
-
-            <div style="display: flex; flex-wrap: wrap; gap: 1rem; background: var(--gray-100); padding: 1rem; border-radius: 12px;">
-                <span class="tag-yellow"><i class="fas fa-chalkboard-user"></i> Programas clave</span>
-                <span>Ruta de Alfabetización Digital (MINEDUC)</span>
-                <span>·</span>
-                <span>Formación a 1.000 profesores rurales</span>
-                <span>·</span>
-                <span>Piloto FAO Ñuble</span>
-            </div>
-        </section>
-
-        <!-- ==================================================== -->
-        <!-- ===== SECCIÓN 4: POLÍTICAS PÚBLICAS ===== -->
-        <!-- ==================================================== -->
-        <section>
-            <h2 class="section-title"><i class="fas fa-landmark"></i> 4. Políticas públicas (2024–2026)</h2>
-            <p class="section-sub">Estrategia integrada que combina <strong>infraestructura (fibra)</strong> con <strong>formación (alfabetización)</strong>, aunque el despliegue territorial aún es desigual.</p>
-
-            <div class="policy-grid">
-                <div class="policy-card">
-                    <h4>Plan Ciudadanía Digital</h4>
-                    <div class="focus">SEGEGOB + MINEDUC</div>
-                    <p>Alfabetización mediática y digital con enfoque descentralizado y territorial.</p>
-                </div>
-                <div class="policy-card">
-                    <h4>Última Milla</h4>
-                    <div class="focus">SUBTEL · US$116M</div>
-                    <p>Conectividad a zonas rurales aisladas.</p>
-                </div>
-                <div class="policy-card">
-                    <h4>Hogares Digitales</h4>
-                    <div class="focus">Fibra óptica</div>
-                    <p>Meta 2026: todas las comunas continentales con cobertura de fibra.</p>
-                </div>
-                <div class="policy-card">
-                    <h4>Escuelas Conectadas</h4>
-                    <div class="focus">Internet gratuito</div>
-                    <p>203 escuelas rurales beneficiadas (50 mil estudiantes).</p>
-                </div>
-                <div class="policy-card">
-                    <h4>Chile Mayor Digital 2.0</h4>
-                    <div class="focus">Plazas itinerantes</div>
-                    <p>Capacitación a adultos mayores en regiones agrícolas (Araucanía, Maule, O'Higgins).</p>
-                </div>
-                <div class="policy-card">
-                    <h4>Piloto FAO–Gobierno</h4>
-                    <div class="focus">Ñuble</div>
-                    <p>Conectividad + alfabetización para 150 usuarios rurales con INDAP y SENCE.</p>
-                </div>
-            </div>
-
-            <div style="margin-top: 1.5rem; background: var(--gray-900); color: white; padding: 1.2rem 1.8rem; border-radius: 16px; border-left: 8px solid var(--yellow);">
-                <p style="font-size: 1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-                    <i class="fas fa-bullseye" style="color: var(--yellow); font-size: 1.5rem;"></i>
-                    <strong>Síntesis:</strong> La cobertura móvil ya casi no es problema (94.5%), pero la <strong>brecha de calidad (fijo)</strong> y la <strong>brecha de habilidades</strong> siguen siendo los dos grandes desafíos estructurales para la inclusión digital real en el Chile rural.
-                </p>
-            </div>
-        </section>
-
-        <!-- ======== FOOTER ======== -->
-        <footer>
-            <span>
-                <i class="fas fa-database"></i> Datos abiertos · SUBTEL, BCN, INDAP, MINEDUC (2024–2025)
-            </span>
-            <span>
-                <i class="fab fa-github"></i> <a href="#">Código en GitHub</a>
-                <i class="fas fa-palette" style="margin-left: 0.8rem;"></i> Amarillo · Gris · Negro · Blanco
-            </span>
-        </footer>
-
+  <!-- ============ TOP BAR ============ -->
+  <div class="topbar">
+    <div class="topbar__brand">
+      <span class="logo-text">FUN99<small>Fundación</small></span>
+      <span>Radiografía Conectividad Rural</span>
     </div>
+    <div class="topbar__meta"><span class="dot"></span> Radiografía Conectividad Rural · Chile 2024–2025</div>
+  </div>
 
-    <!-- ======== SCRIPTS ======== -->
-    <script>
-        (function() {
-            // Colores de la paleta
-            const YELLOW = '#eab308';
-            const YELLOW_LIGHT = 'rgba(234, 179, 8, 0.2)';
-            const GRAY_900 = '#111827';
-            const GRAY_500 = '#6b7280';
-            const GRAY_300 = '#d1d5db';
-            const GRAY_100 = '#f3f4f6';
-            const WHITE = '#ffffff';
+  <!-- ============ SIGNAL SPINE NAV ============ -->
+  <ul class="spine" id="spine">
+    <li><button data-target="#conectividad"><span class="bar"></span><span class="num">01 · Conectividad</span></button></li>
+    <li><button data-target="#digitalizacion"><span class="bar"></span><span class="num">02 · Digitalización</span></button></li>
+    <li><button data-target="#alfabetizacion"><span class="bar"></span><span class="num">03 · Alfabetización</span></button></li>
+    <li><button data-target="#politicas"><span class="bar"></span><span class="num">04 · Políticas</span></button></li>
+  </ul>
 
-            // 1. Fijo Urbano vs Rural
-            new Chart(document.getElementById('chartFijo'), {
-                type: 'bar',
-                data: {
-                    labels: ['Urbano', 'Rural'],
-                    datasets: [{
-                        label: '% con internet fijo',
-                        data: [72, 32],
-                        backgroundColor: [YELLOW, GRAY_900],
-                        borderRadius: 6,
-                        barPercentage: 0.5,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%', color: GRAY_500 } },
-                        x: { ticks: { color: GRAY_900, font: { weight: 'bold' } } }
-                    }
-                }
-            });
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero__inner">
+      <div>
+        <div class="eyebrow on-dark"><span class="tab"></span>Fundación 99 · Informe 2024–2025</div>
+        <h1>Radiografía de la<br><em>conectividad rural</em></h1>
+        <p class="lede">Un diagnóstico de la brecha digital en el Chile rural: infraestructura, uso de plataformas públicas, habilidades y la política pública que intenta cerrarla.</p>
+        <div class="hero__source">
+          <span>Fuentes: SUBTEL</span><span>BCN</span><span>INDAP</span><span>MINEDUC</span>
+        </div>
 
-            // 2. Evolución fijo rural
-            new Chart(document.getElementById('chartEvolucion'), {
-                type: 'line',
-                data: {
-                    labels: ['2021', '2022', '2023', '2024'],
-                    datasets: [{
-                        label: '% hogares rurales con fijo',
-                        data: [17, 19, 21, 24],
-                        borderColor: YELLOW,
-                        backgroundColor: YELLOW_LIGHT,
-                        tension: 0.2,
-                        fill: true,
-                        pointBackgroundColor: GRAY_900,
-                        pointBorderColor: WHITE,
-                        pointBorderWidth: 2,
-                        pointRadius: 5,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, max: 30, ticks: { callback: v => v + '%', color: GRAY_500 } },
-                        x: { ticks: { color: GRAY_900 } }
-                    }
-                }
-            });
+        <div class="toggle-row">
+          <span class="toggle-label">Comparar cifras</span>
+          <div class="toggle" id="uvrToggle">
+            <button class="active" data-mode="rural">Rural</button>
+            <button data-mode="urban">Urbano</button>
+          </div>
+        </div>
+      </div>
 
-            // 3. SII por nivel socioeconómico
-            new Chart(document.getElementById('chartSII'), {
-                type: 'bar',
-                data: {
-                    labels: ['ABC1 (Alto)', 'D/E (Bajo)'],
-                    datasets: [{
-                        label: 'Usan SII online',
-                        data: [96, 51],
-                        backgroundColor: [YELLOW, GRAY_500],
-                        borderRadius: 6,
-                        barPercentage: 0.5,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%', color: GRAY_500 } },
-                        x: { ticks: { color: GRAY_900 } }
-                    }
-                }
-            });
+      <div class="signal-graphic" aria-hidden="true">
+        <div class="col on"><div class="bar" style="height:36px; animation-delay:.05s;"></div><span>25%</span></div>
+        <div class="col on"><div class="bar" style="height:64px; animation-delay:.15s;"></div><span>50%</span></div>
+        <div class="col on"><div class="bar" style="height:96px; animation-delay:.25s;"></div><span>75%</span></div>
+        <div class="col on"><div class="bar" style="height:132px; animation-delay:.35s;"></div><span>95%</span></div>
+        <div class="col"><div class="bar" style="height:60px; animation-delay:.45s;"></div><span>fijo 32%</span></div>
+      </div>
+    </div>
+  </section>
 
-            // 4. SII por edad
-            new Chart(document.getElementById('chartEdad'), {
-                type: 'bar',
-                data: {
-                    labels: ['31–40 años', 'Mayores de 60'],
-                    datasets: [{
-                        label: 'Usan SII online',
-                        data: [79, 51],
-                        backgroundColor: [YELLOW, GRAY_300],
-                        borderRadius: 6,
-                        barPercentage: 0.5,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%', color: GRAY_500 } },
-                        x: { ticks: { color: GRAY_900 } }
-                    }
-                }
-            });
+  <div class="shell">
 
-            // 5. Habilidades digitales (Todas vs Ninguna)
-            new Chart(document.getElementById('chartHabilidades'), {
-                type: 'bar',
-                data: {
-                    labels: ['Básicas', 'Intermedias', 'Avanzadas'],
-                    datasets: [{
-                        label: 'Tiene todas',
-                        data: [54, 19, 7.2],
-                        backgroundColor: YELLOW,
-                        borderRadius: 4,
-                    }, {
-                        label: 'No tiene ninguna',
-                        data: [5, 10, 47.1],
-                        backgroundColor: GRAY_500,
-                        borderRadius: 4,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'top', labels: { boxWidth: 12, color: GRAY_900 } }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, max: 60, ticks: { callback: v => v + '%', color: GRAY_500 } },
-                        x: { ticks: { color: GRAY_900 } }
-                    }
-                }
-            });
+    <!-- ============ KPIs ============ -->
+    <section class="kpis">
+      <div class="kpi-grid">
+        <div class="kpi reveal">
+          <div class="number"><span class="count" data-rural="94.5" data-urban="96.8" data-decimals="1">0</span><span class="suffix">%</span></div>
+          <div class="label"><span data-label-rural="Hogares rurales con internet propio" data-label-urban="Hogares urbanos con internet propio">Hogares rurales con internet propio</span></div>
+        </div>
+        <div class="kpi reveal">
+          <div class="number"><span class="count" data-rural="32" data-urban="72" data-decimals="0">0</span><span class="suffix">%</span></div>
+          <div class="label"><span data-label-rural="Hogares rurales con internet fijo" data-label-urban="Hogares urbanos con internet fijo">Hogares rurales con internet fijo</span></div>
+        </div>
+        <div class="kpi reveal">
+          <div class="number"><span class="count" data-rural="54" data-urban="54" data-decimals="0">0</span><span class="suffix">%</span></div>
+          <div class="label">Población con habilidades digitales básicas (nacional)</div>
+        </div>
+        <div class="kpi reveal">
+          <div class="number"><span class="count" data-rural="7.2" data-urban="7.2" data-decimals="1">0</span><span class="suffix">%</span></div>
+          <div class="label">Población con habilidades digitales avanzadas (nacional)</div>
+        </div>
+      </div>
+    </section>
 
-            // 6. Adultos mayores y computador (Doughnut)
-            new Chart(document.getElementById('chartAdultos'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Nunca usó computador', 'Usó en últimos 3 meses'],
-                    datasets: [{
-                        data: [53.3, 29],
-                        backgroundColor: [GRAY_900, YELLOW],
-                        borderWidth: 0,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, color: GRAY_900 } }
-                    },
-                    cutout: '65%',
-                }
-            });
+    <!-- ============ 01 CONECTIVIDAD ============ -->
+    <section class="block" id="conectividad">
+      <div class="block__head reveal">
+        <div class="eyebrow"><span class="tab"></span>01 — Diagnóstico</div>
+        <h2>Conectividad</h2>
+        <p>Cobertura móvil casi universal, pero el internet fijo de calidad sigue siendo el gran pendiente del mundo rural.</p>
+      </div>
 
-        })();
-    </script>
+      <div class="callout reveal">
+        <div><span class="big">40 puntos</span> <span class="desc">de brecha en internet fijo entre lo urbano y lo rural</span></div>
+        <div class="tags">
+          <span class="pill dark">Urbano 72%</span><span class="vs">vs</span><span class="pill">Rural 32%</span>
+        </div>
+      </div>
 
+      <div class="chart-grid">
+        <div class="chart-card reveal">
+          <h3>Acceso a internet fijo</h3>
+          <div class="canvas-wrap"><canvas id="chartFijo"></canvas></div>
+          <div class="footnote">Brecha de calidad: solo 1 de cada 3 hogares rurales tiene fibra o cable.</div>
+        </div>
+        <div class="chart-card reveal">
+          <h3>Evolución del fijo en zonas rurales</h3>
+          <div class="canvas-wrap"><canvas id="chartEvolucion"></canvas></div>
+          <div class="footnote">Crecimiento lento: +7 puntos en 3 años (2021 → 2024).</div>
+        </div>
+      </div>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead><tr><th>Indicador</th><th>Urbano</th><th>Rural</th><th>Brecha</th></tr></thead>
+          <tbody>
+            <tr><td>Hogares con internet (propio)</td><td>96.8%</td><td>94.5%</td><td>2.3 pts</td></tr>
+            <tr><td><b>Internet fijo (fibra/cable)</b></td><td>72%</td><td class="hi">32%</td><td class="hi">40 pts</td></tr>
+            <tr><td>Hogares que solo usan móvil</td><td>~25%</td><td>&gt;25%</td><td>Dependencia móvil</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="strip reveal">
+        <div class="item"><b class="tag">Alerta</b>+2.000 localidades rurales sin servicio móvil ni fijo.</div>
+        <div class="item"><b class="tag">Escuelas</b>98% tiene internet, pero solo 65% cuenta con alta velocidad.</div>
+        <div class="item"><b class="tag">Proyectos</b>Fibra WOM en 161 comunas · meta Hogares Digitales 2026.</div>
+      </div>
+    </section>
+
+    <!-- ============ 02 DIGITALIZACIÓN ============ -->
+    <section class="block" id="digitalizacion">
+      <div class="block__head reveal">
+        <div class="eyebrow"><span class="tab"></span>02 — Diagnóstico</div>
+        <h2>Digitalización</h2>
+        <p>Plataformas públicas como Clave Única y Mi INDAP avanzan, pero el uso real choca con la falta de conectividad fija y dispositivos adecuados.</p>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card reveal">
+          <h3>Uso de SII online por nivel socioeconómico</h3>
+          <div class="canvas-wrap"><canvas id="chartSII"></canvas></div>
+          <div class="footnote">ABC1 96% vs D/E 51% — la brecha digital también es económica.</div>
+        </div>
+        <div class="chart-card reveal">
+          <h3>Uso de SII online por edad</h3>
+          <div class="canvas-wrap"><canvas id="chartEdad"></canvas></div>
+          <div class="footnote">Solo la mitad de los mayores de 60 años usa trámites digitales.</div>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card neutral reveal">
+          <h4><span class="sq"></span>Plataformas INDAP</h4>
+          <ul>
+            <li><b>Mi INDAP</b> — sucursal virtual para trámites.</li>
+            <li><b>Mi Pago INDAP</b> — más de 62 mil agricultores pagan créditos en línea, evitando viajes de hasta 50&nbsp;km.</li>
+            <li><b>Apolo</b> — postulación a proyectos de inversión.</li>
+          </ul>
+        </div>
+        <div class="info-card accent reveal">
+          <h4><span class="sq"></span>Iniciativas activas</h4>
+          <ul>
+            <li><b>FAO Ñuble</b> — 150 usuarios en alfabetización digital.</li>
+            <li><b>Mujeres rurales</b> — 495 capacitadas en marketing digital (Valparaíso).</li>
+            <li><b>Chile Mayor Digital</b> — plazas itinerantes para adultos mayores.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 ALFABETIZACIÓN ============ -->
+    <section class="block" id="alfabetizacion">
+      <div class="block__head reveal">
+        <div class="eyebrow"><span class="tab"></span>03 — Diagnóstico</div>
+        <h2>Alfabetización digital</h2>
+        <p>La brecha de segundo nivel es la más crítica: incluso con acceso, muchas personas rurales carecen de las habilidades para aprovecharlo.</p>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card reveal">
+          <h3>Nivel de habilidades digitales</h3>
+          <div class="canvas-wrap"><canvas id="chartHabilidades"></canvas></div>
+          <div class="footnote">Solo 7.2% tiene habilidades avanzadas; 47.1% no tiene ninguna habilidad avanzada.</div>
+        </div>
+        <div class="chart-card reveal">
+          <h3>Adultos mayores y uso de computador</h3>
+          <div class="canvas-wrap"><canvas id="chartAdultos"></canvas></div>
+          <div class="footnote">Más de la mitad (53.3%) nunca ha usado un computador.</div>
+        </div>
+      </div>
+
+      <div class="reasons reveal">
+        <div class="eyebrow" style="margin-bottom:0.9rem;"><span class="tab"></span>¿Por qué no hay internet en el hogar? — toca cada motivo</div>
+        <div class="reasons__grid">
+          <button class="reason" data-note="Sin una persona de referencia en casa, aprender queda a merced de talleres externos: es el motivo más nombrado y el más difícil de resolver solo con infraestructura.">
+            <div class="pct">34.9%</div><div class="txt">"Nadie en el hogar sabe usarlo"</div>
+            <div class="note"></div><div class="hint">Ver por qué importa</div>
+          </button>
+          <button class="reason" data-note="La falta de interés suele esconder una experiencia previa poco útil o irrelevante: el contenido y los trámites deben sentirse necesarios para la vida diaria.">
+            <div class="pct">27.6%</div><div class="txt">"No me interesa"</div>
+            <div class="note"></div><div class="hint">Ver por qué importa</div>
+          </button>
+          <button class="reason" data-note="El costo relativo del servicio fijo es más alto en zonas de menor densidad, donde además hay menos oferta de proveedores compitiendo por el hogar.">
+            <div class="pct">18.6%</div><div class="txt">"Alto costo"</div>
+            <div class="note"></div><div class="hint">Ver por qué importa</div>
+          </button>
+        </div>
+      </div>
+
+      <div class="strip reveal">
+        <div class="item"><b class="tag">Programa</b>Ruta de Alfabetización Digital (MINEDUC).</div>
+        <div class="item"><b class="tag">Formación</b>1.000 profesores rurales capacitados.</div>
+        <div class="item"><b class="tag">Piloto</b>FAO Ñuble, con seguimiento a usuarios rurales.</div>
+      </div>
+    </section>
+
+    <!-- ============ 04 POLÍTICAS ============ -->
+    <section class="block" id="politicas">
+      <div class="block__head reveal">
+        <div class="eyebrow"><span class="tab"></span>04 — Respuesta</div>
+        <h2>Políticas públicas 2024–2026</h2>
+        <p>Una estrategia que combina infraestructura (fibra) con formación (alfabetización), aunque el despliegue territorial aún es desigual. Toca cada política para ver el detalle.</p>
+      </div>
+
+      <div class="policies reveal" id="policyList">
+        <div class="policy">
+          <button class="policy__head">
+            <div class="policy__title"><span class="idx">01</span><div><h4>Plan Ciudadanía Digital</h4><span class="focus">SEGEGOB + MINEDUC</span></div></div>
+            <span class="policy__chevron">+</span>
+          </button>
+          <div class="policy__body"><p>Alfabetización mediática y digital con enfoque descentralizado y territorial, priorizando comunas con menor cobertura de habilidades avanzadas.</p></div>
+        </div>
+        <div class="policy">
+          <button class="policy__head">
+            <div class="policy__title"><span class="idx">02</span><div><h4>Última Milla</h4><span class="focus">SUBTEL · US$116M</span></div></div>
+            <span class="policy__chevron">+</span>
+          </button>
+          <div class="policy__body"><p>Financia conectividad para las localidades rurales más aisladas, allí donde el mercado no llega por sí solo.</p></div>
+        </div>
+        <div class="policy">
+          <button class="policy__head">
+            <div class="policy__title"><span class="idx">03</span><div><h4>Hogares Digitales</h4><span class="focus">Fibra óptica</span></div></div>
+            <span class="policy__chevron">+</span>
+          </button>
+          <div class="policy__body"><p>Meta 2026: todas las comunas continentales con cobertura de fibra óptica disponible para conectar hogares.</p></div>
+        </div>
+        <div class="policy">
+          <button class="policy__head">
+            <div class="policy__title"><span class="idx">04</span><div><h4>Escuelas Conectadas</h4><span class="focus">Internet gratuito</span></div></div>
+            <span class="policy__chevron">+</span>
+          </button>
+          <div class="policy__body"><p>203 escuelas rurales beneficiadas, con impacto directo en cerca de 50 mil estudiantes.</p></div>
+        </div>
+        <div class="policy">
+          <button class="policy__head">
+            <div class="policy__title"><span class="idx">05</span><div><h4>Chile Mayor Digital 2.0</h4><span class="focus">Plazas itinerantes</span></div></div>
+            <span class="policy__chevron">+</span>
+          </button>
+          <div class="policy__body"><p>Capacitación presencial a adultos mayores en regiones agrícolas: Araucanía, Maule y O'Higgins.</p></div>
+        </div>
+        <div class="policy">
+          <button class="policy__head">
+            <div class="policy__title"><span class="idx">06</span><div><h4>Piloto FAO–Gobierno</h4><span class="focus">Ñuble</span></div></div>
+            <span class="policy__chevron">+</span>
+          </button>
+          <div class="policy__body"><p>Conectividad más alfabetización para 150 usuarios rurales, coordinado con INDAP y SENCE.</p></div>
+        </div>
+      </div>
+
+      <div class="synthesis reveal">
+        <div class="k">Síntesis</div>
+        <p>La cobertura móvil ya casi no es problema <b>(94.5%)</b>, pero la <b>brecha de calidad</b> del fijo y la <b>brecha de habilidades</b> siguen siendo los dos grandes desafíos estructurales para la inclusión digital real en el Chile rural.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <div class="shell footer-inner">
+      <div class="footer-brand">
+        <span class="logo-text">FUN99<small>Fundación</small></span>
+        <span>Datos abiertos · SUBTEL, BCN, INDAP, MINEDUC (2024–2025). Elaborado por Fundación 99.</span>
+      </div>
+      <div class="footer-swatch" aria-hidden="true">
+        <i style="background:#F7D913"></i><i style="background:#24282B"></i><i style="background:#9A9D9F"></i><i style="background:#FFFFFF"></i>
+      </div>
+    </div>
+  </footer>
+
+<script>
+(function(){
+  // ---------- Chart.js brand defaults ----------
+  Chart.defaults.font.family = "'Montserrat', sans-serif";
+  Chart.defaults.font.weight = 600;
+  Chart.defaults.color = '#6D7175';
+
+  const YELLOW = '#F7D913';
+  const YELLOW_SOFT = 'rgba(247,217,19,0.25)';
+  const INK = '#24282B';
+  const GRAY = '#9A9D9F';
+  const LINE = '#E1DFD8';
+
+  const tooltipBase = {
+    backgroundColor: INK, titleColor: '#fff', bodyColor: '#fff',
+    padding: 10, cornerRadius: 8, titleFont:{weight:800}, bodyFont:{weight:600},
+    displayColors:false
+  };
+
+  new Chart(document.getElementById('chartFijo'), {
+    type:'bar',
+    data:{ labels:['Urbano','Rural'], datasets:[{ data:[72,32], backgroundColor:[INK,YELLOW], borderRadius:6, barPercentage:0.5 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:tooltipBase },
+      scales:{ y:{ beginAtZero:true, max:100, grid:{color:LINE}, ticks:{callback:v=>v+'%'} }, x:{ grid:{display:false}, ticks:{color:INK, font:{weight:800}} } } }
+  });
+
+  new Chart(document.getElementById('chartEvolucion'), {
+    type:'line',
+    data:{ labels:['2021','2022','2023','2024'], datasets:[{ data:[17,19,21,24], borderColor:YELLOW, backgroundColor:YELLOW_SOFT, tension:0.25, fill:true,
+      pointBackgroundColor:INK, pointBorderColor:'#fff', pointBorderWidth:2, pointRadius:5 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:tooltipBase },
+      scales:{ y:{ beginAtZero:true, max:30, grid:{color:LINE}, ticks:{callback:v=>v+'%'} }, x:{ grid:{display:false} } } }
+  });
+
+  new Chart(document.getElementById('chartSII'), {
+    type:'bar',
+    data:{ labels:['ABC1 (alto)','D/E (bajo)'], datasets:[{ data:[96,51], backgroundColor:[YELLOW,GRAY], borderRadius:6, barPercentage:0.5 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:tooltipBase },
+      scales:{ y:{ beginAtZero:true, max:100, grid:{color:LINE}, ticks:{callback:v=>v+'%'} }, x:{ grid:{display:false}, ticks:{color:INK, font:{weight:800}} } } }
+  });
+
+  new Chart(document.getElementById('chartEdad'), {
+    type:'bar',
+    data:{ labels:['31–40 años','Mayores de 60'], datasets:[{ data:[79,51], backgroundColor:[YELLOW,GRAY], borderRadius:6, barPercentage:0.5 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:tooltipBase },
+      scales:{ y:{ beginAtZero:true, max:100, grid:{color:LINE}, ticks:{callback:v=>v+'%'} }, x:{ grid:{display:false}, ticks:{color:INK, font:{weight:800}} } } }
+  });
+
+  new Chart(document.getElementById('chartHabilidades'), {
+    type:'bar',
+    data:{ labels:['Básicas','Intermedias','Avanzadas'], datasets:[
+      { label:'Tiene todas', data:[54,19,7.2], backgroundColor:YELLOW, borderRadius:4 },
+      { label:'No tiene ninguna', data:[5,10,47.1], backgroundColor:GRAY, borderRadius:4 }
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'top', labels:{boxWidth:10, color:INK, font:{weight:700}} }, tooltip:tooltipBase },
+      scales:{ y:{ beginAtZero:true, max:60, grid:{color:LINE}, ticks:{callback:v=>v+'%'} }, x:{ grid:{display:false}, ticks:{color:INK, font:{weight:700}} } } }
+  });
+
+  new Chart(document.getElementById('chartAdultos'), {
+    type:'doughnut',
+    data:{ labels:['Nunca usó computador','Usó en últimos 3 meses','Usó, no recientemente'],
+      datasets:[{ data:[53.3,29,17.7], backgroundColor:[INK,YELLOW,LINE], borderWidth:0 }] },
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'65%',
+      plugins:{ legend:{ position:'bottom', labels:{boxWidth:10, color:INK, font:{weight:700}, padding:12} }, tooltip:tooltipBase } }
+  });
+
+  // ---------- Count-up on scroll ----------
+  const counters = document.querySelectorAll('.count');
+  const countObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const el = entry.target;
+        const decimals = parseInt(el.dataset.decimals || '0', 10);
+        const mode = document.body.dataset.mode || 'rural';
+        const target = parseFloat(el.dataset[mode] || el.dataset.rural);
+        const dur = 1100; const start = performance.now();
+        function tick(now){
+          const p = Math.min(1, (now-start)/dur);
+          const eased = 1 - Math.pow(1-p, 3);
+          el.textContent = (target*eased).toFixed(decimals);
+          if(p<1) requestAnimationFrame(tick);
+          else {
+            // asegurar el valor final exacto
+            el.textContent = target.toFixed(decimals);
+          }
+        }
+        requestAnimationFrame(tick);
+        countObserver.unobserve(el);
+      }
+    });
+  }, {threshold:0.6});
+  counters.forEach(c=>countObserver.observe(c));
+
+  // ---------- Urbano/Rural toggle ----------
+  const toggle = document.getElementById('uvrToggle');
+  toggle.addEventListener('click', (e)=>{
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    toggle.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const mode = btn.dataset.mode;
+    document.body.dataset.mode = mode;
+
+    document.querySelectorAll('.count').forEach(el=>{
+      const decimals = parseInt(el.dataset.decimals || '0', 10);
+      const val = parseFloat(el.dataset[mode]);
+      el.textContent = val.toFixed(decimals);
+    });
+    document.querySelectorAll('[data-label-rural]').forEach(el=>{
+      el.textContent = mode === 'urban' ? el.dataset.labelUrban : el.dataset.labelRural;
+    });
+  });
+
+  // ---------- Reason chips ----------
+  document.querySelectorAll('.reason').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const isOpen = btn.classList.contains('open');
+      document.querySelectorAll('.reason').forEach(b=>{ b.classList.remove('open'); b.querySelector('.note').textContent=''; });
+      if(!isOpen){
+        btn.classList.add('open');
+        btn.querySelector('.note').textContent = btn.dataset.note;
+      }
+    });
+  });
+
+  // ---------- Policy accordion ----------
+  document.querySelectorAll('.policy__head').forEach(head=>{
+    head.addEventListener('click', ()=>{
+      const item = head.parentElement;
+      const body = item.querySelector('.policy__body');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.policy').forEach(p=>{ p.classList.remove('open'); p.querySelector('.policy__body').style.maxHeight = null; });
+      if(!wasOpen){
+        item.classList.add('open');
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+  });
+
+  // ---------- Scroll-spy spine ----------
+  const spineButtons = document.querySelectorAll('#spine button');
+  spineButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelector(btn.dataset.target).scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+  const sections = ['#conectividad','#digitalizacion','#alfabetizacion','#politicas'].map(id=>document.querySelector(id));
+  const spyObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const id = '#' + entry.target.id;
+        spineButtons.forEach(b=> b.classList.toggle('active', b.dataset.target === id));
+      }
+    });
+  }, {rootMargin:'-40% 0px -50% 0px', threshold:0});
+  sections.forEach(s=> s && spyObserver.observe(s));
+
+  // ---------- Reveal on scroll ----------
+  const revealObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){ entry.target.classList.add('in'); revealObserver.unobserve(entry.target); }
+    });
+  }, {threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(el=> revealObserver.observe(el));
+
+})();
+</script>
 </body>
 </html>
